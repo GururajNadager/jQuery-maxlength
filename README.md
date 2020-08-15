@@ -25,3 +25,18 @@ $("input,textarea").maxlength({
 
 });
 ```  
+
+## Usage       
+```
+<input type="text" maxlength="10" />
+
+<textarea rows="4" cols="50" maxlength="50"></textarea>
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+      $("input,textarea").maxlength();
+   });
+        
+</script>
+
