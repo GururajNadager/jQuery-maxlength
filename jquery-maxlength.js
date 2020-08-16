@@ -1,75 +1,113 @@
-        /* ==========================================================
-         * jQuery-maxlength.js v1.0.0
-         *
-         * Copyright (c) 2020 Gururaj Nadager;
-         *
-         * Licensed under the terms of the MIT license.
-         * See: https://github.com/GururajNadager/jQuery-maxlength/blob/master/LICENSE
-         * ========================================================== */
-        (function ($) {
-            'use strict';
+/* ==========================================================
+ * jQuery-maxlength.js v1.0.0
+ *
+ * Copyright (c) 2020 Gururaj Nadager;
+ *
+ * Licensed under the terms of the MIT license.
+ * See: https://github.com/GururajNadager/jQuery-maxlength/blob/master/LICENSE
+ * ========================================================== */
+(function ($) {
+    'use strict';
 
-            var attrs = {
-                maxLengthTemplate: "data-maxlength-template"
-            }
-            $.fn.maxlength = function (options) {
-                var settings = $.extend({}, $.fn.maxlength.defaults, options);
-                this.each(function () {
-                    var ele = $(this);
-                    insertTemplate(ele, settings)
-                    ele.on("keyup", settings, keypress);
+    var attrs = {
+        maxLengthTemplate: "data-maxlength-template"
+    }
 
-                });
-
-                return this;
-            };
-
-            function insertTemplate(ele, settings) {
-                $(settings.template).attr(attrs.maxLengthTemplate, "true")
-                    .css("color", settings.color)
-                    .css("font-size", settings.fontSize)
-                    .css("text-align", settings.position)
-                    .insertAfter(ele);
-            }
-
-            function show(event, length, maxLength) {
-                if (event.data.show) {
-                    if (length != 0)
-                        $(event.target).next("[" + attrs.maxLengthTemplate + "='true']").text(format(event.data.text, length, maxLength));
-                    else
-                        $(event.target).next("[" + attrs.maxLengthTemplate + "='true']").text("");
+    /**
+      * This function uses maxlength attribute to restrict maximum number of characters allowed in the <input> <textarea> element.
+      * Also provides template for displaying the number of characters entered in the <input> <textarea> element.
+      * @param {Object} options - the configuration for this plugin.
+      */
+    $.fn.maxlength = function (options) {
+        var settings = $.extend({}, $.fn.maxlength.defaults, options);
+        this.each(function () {
+            var ele = $(this);
+            //Attach events only if the element has MaxLength attribute.
+            if (typeof ele.attr("maxlength") != "undefined") {
+                ele.on("keypress", settings, keypress);
+                if (settings.showTemplate) {
+                    insertTemplate(ele, settings);
+                    ele.on("focusout", settings, focusout);
+                    ele.on("keyup", settings, keyup);
                 }
-
             }
+        });
+        return this;
+    };
 
-            function format(text, length, maxLength) {
-                return text.replace("{total}", length).replace("{maxLength}", maxLength);
-            }
+    /**
+      * Add a new HTML element next to input element.
+      * @param {HTMLElement} ele - HTML element.
+      * @param {HTMLElement} settings - plugin configuration.
+      */
+    function insertTemplate(ele, settings) {
+        $(settings.template).attr(attrs.maxLengthTemplate, "true")
+            .css("color", settings.color)
+            .css("font-size", settings.fontSize)
+            .css("text-align", settings.position)
+            .insertAfter(ele);
+    }
 
+    /**
+      * show the template.
+      * @param {Object} event - HTML Textbox event.
+      * @param {int} length - length of the characters entered.
+      * @param {int} maxLength - max length of characters allowed to be enetered.
+      */
+    function show(event, length, maxLength) {
+        if (length != 0)
+            $(event.target).next("[" + attrs.maxLengthTemplate + "='true']").text(format(event.data.text, length, maxLength));
+        else
+            clear(event);
+    }
 
-            function keypress(event) {
-                var key = event.which;
-                var maxLength = $(this).attr("maxlength");
+    /**
+      * Format the template text.
+      * @param {string} text - template text.
+      * @param {int} length - length of the characters entered.
+      * @param {int} maxLength - max length of characters allowed to be enetered.
+      */
+    function format(text, length, maxLength) {
+        return text.replace("{total}", length).replace("{maxLength}", maxLength);
+    }
 
-                if (typeof maxLength != "undefined") {
-                    var length = this.value.length;
-                    if (key >= 33 || key == 13 || key == 32) {
-                        if (length >= maxLength)
-                            event.preventDefault();
-                    }
-                    show(event, length, maxLength);
-                }
+    /**
+      * Clear the template.
+      * @param {Object} event - HTML Textbox event.
+      */
+    function clear(event) {
+        $(event.target).next("[" + attrs.maxLengthTemplate + "='true']").text("");
+    }
 
-            }
+    /**
+      * Keypress event of HTML Element.
+      * @param {Object} event - HTML Textbox event.
+      */
+    function keypress(event) {
+        var key = (event.keyCode ? event.keyCode : event.which);
+        var length = this.value.length;
+        var maxLength = $(event.target).attr("maxlength");
+        if (key >= 33 || key == 13 || key == 32) {
+            if (length >= maxLength)
+                event.preventDefault();
+        }
+    }
 
-            $.fn.maxlength.defaults = {
-                text: "{total}/{maxLength}",
-                position: "left",
-                color: "green",
-                fontSize: "12px",
-                template: "<div/>",
-                show: true
-            };
+    /**
+     * Keyup event of HTML Element.
+     * @param {Object} event - HTML Textbox event.
+     */
+    function keyup(event) {
+        var length = this.value.length;
+        show(event, length, $(event.target).attr("maxlength"));
+    }
 
-
-        })(jQuery);
+    $.fn.maxlength.defaults = {
+        text: "{total}/{maxLength}",
+        position: "left",
+        color: "grey",
+        fontSize: "12px",
+        template: "<div />",
+        showTemplate: true
+    };
+})(jQuery);
