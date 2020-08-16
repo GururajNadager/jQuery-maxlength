@@ -29,6 +29,7 @@
                     insertTemplate(ele, settings);
                     ele.on("focusout", settings, clear);
                     ele.on("keyup", settings, keyup);
+                    ele.on("paste", settings, paste);
                 }
             }
         });
@@ -100,6 +101,18 @@
     function keyup(event) {
         var length = this.value.length;
         show(event, length, $(event.target).attr("maxlength"));
+    }
+
+    /**
+    * paste event of HTML Element.
+    * @param {Object} event - HTML Textbox event.
+    */
+    function paste(event) {
+        var pastedData = event.originalEvent.clipboardData.getData('text') ? event.originalEvent.clipboardData.getData('text')
+                                                                           : event.originalEvent.clipboardData.getData('text/plain');
+        var maxlength = $(event.target).attr("maxlength");
+        var length = pastedData.length > maxlength ? maxlength : pastedData.length;
+        show(event, length, maxlength );
     }
 
     $.fn.maxlength.defaults = {
