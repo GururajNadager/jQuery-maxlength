@@ -27,7 +27,7 @@
                 ele.on("keypress", settings, keypress);
                 if (settings.showTemplate) {
                     insertTemplate(ele, settings);
-                    ele.on("focusout", settings, focusout);
+                    ele.on("focusout", settings, clear);
                     ele.on("keyup", settings, keyup);
                 }
             }
