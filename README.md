@@ -7,7 +7,7 @@ This is a Jquery plugin which uses maxlength attribute to restrict maximum numbe
 **color:** Color of the text displayed in the template.   
 **fontSize:** Size of the text displayed in the template.   
 **template:** container for the text displayed in the template.   
-**show:** Hide/show the template.   
+**showTemplate:** Hide/show the template.   
 
 ## Examples
 Basic implementation:   
