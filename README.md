@@ -21,7 +21,7 @@ $("input,textarea").maxlength({
      color: "green",
      fontSize: "12px",
      template: "<div/>",
-     show: true
+     showTemplate: true
 
 });
 ```  
